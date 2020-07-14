@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include<iostream>
+#include <cmath>
 
 using namespace std;
 
@@ -10,6 +11,7 @@ class Block
    int Fcost, Hcost, Gcost;
    char property;
  public:
+    int row,col;
     sf::RectangleShape rect;
 
     bool isSource(){
@@ -53,6 +55,8 @@ vector<vector<Block>> generateGrid(){
               grid[i][j].rect.setOutlineColor(sf::Color::Black);
               grid[i][j].rect.setOutlineThickness(1.0f);
               grid[i][j].rect.setPosition(i*cellSize.x + 5.0f, j*cellSize.y + 5.0f);
+              grid[i][j].row = i;
+              grid[i][j].col = j;
               grid[i][j].setProp('b');
           }
   }
@@ -98,12 +102,34 @@ vector<vector<int>> findSurronding(Block currBlock,int rows,int columns){
   return surVector;
   }
 
+vector<int> findMinimum(vector<vector<int>> surVector,Block destination){
+  int f_cost_min = 100000;
+  vector<int> minVector;
+  int goal_x = destination.row;
+  int goal_y = destination.col;
+  int h_cost;
+  for(int p = 0;p < surVector.size();p++){
+    int curr_x = surVector[p][0];
+    int curr_y = surVector[p][1];
+
+    h_cost = sqrt(pow(curr_x-goal_x,2) + pow(curr_y-goal_y,2));
+    if(h_cost<f_cost_min){
+      f_cost_min = h_cost;
+      minVector = surVector[p];
+    }
+  }
+  return minVector;
+}
+
 
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(900,700), "A* Visualizer");
     Block src,des;
+    Block curr;
     vector<vector<int>> surVector;
+    vector<int> minVector;
+    vector<vector<int>> path;
     char mode = 's';
     int rows = 100;
     int columns = 100;
@@ -117,7 +143,11 @@ int main()
                 window.close();
             if(event.type == sf::Event::KeyPressed){
               if (event.key.code == sf::Keyboard::S){
-                surVector = findSurronding(src,rows,columns);
+                surVector = findSurronding(curr,rows,columns);
+                minVector = findMinimum(surVector,des);
+                path.push_back(minVector);
+                curr = grid[minVector[0]][minVector[1]];
+                //cout << minVector[0] << " " << minVector[1];
                 mode = 'b';
               }
               if (event.key.code == sf::Keyboard::R){
@@ -137,12 +167,14 @@ int main()
                             if (mode == 'd'){
                                 grid[i][j].rect.setFillColor(sf::Color::Red);
                                 grid[i][j].setProp('d');
+                                des = grid[i][j];
                                 mode = 'o';
                             }
                             else if(mode == 's'){
                                 grid[i][j].rect.setFillColor(sf::Color::Blue);
                                 grid[i][j].setProp('s');
                                 src = grid[i][j];
+                                curr = src;
                                 mode = 'd';
                             }
                             else if(mode == 'o'){
@@ -179,7 +211,14 @@ int main()
           int l = surVector[p][0];
           int k = surVector[p][1];
           grid[l][k].rect.setFillColor(sf::Color::Yellow);
+
         }
+        for(int p = 0;p<path.size();p++){
+          int l = path[p][0];
+          int k = path[p][1];
+          grid[l][k].rect.setFillColor(sf::Color::Green);
+        }
+
 
         for(int i=0;i<columns;i++){
             for(int j=0;j<rows;j++){
