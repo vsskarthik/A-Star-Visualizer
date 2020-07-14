@@ -8,7 +8,7 @@ class Block
 {
  private:
    int Fcost, Hcost, Gcost;
-   char property;;
+   char property;
  public:
     sf::RectangleShape rect;
 
@@ -60,25 +60,13 @@ vector<vector<Block>> generateGrid(){
   // End Create Grid
 }
 
-vector<vector<int>> findSurronding(Block currBlock,vector<vector<Block>> grid,int rows,int columns){
-  //vector<Block> minVector;
+auto grid = generateGrid();
+
+vector<vector<int>> findSurronding(Block currBlock,int rows,int columns){
   vector<vector<int>> minVector;
   for(int i=0;i<rows;i++){
           for(int j=0;j<columns;j++){
               if(grid[i][j].rect.getPosition() == currBlock.rect.getPosition()){
-                /*
-                //Top Row
-                minVector.push_back(grid[i-1][j-1]);
-                minVector.push_back(grid[i-1][j]);
-                minVector.push_back(grid[i-1][j+1]);
-                // Middle or Current
-                minVector.push_back(grid[i][j-1]);
-                minVector.push_back(grid[i][j+1]);
-                //Bottom Row
-                minVector.push_back(grid[i+1][j-1]);
-                minVector.push_back(grid[i+1][j]);
-                minVector.push_back(grid[i+1][j+1]);
-                */
                 //Top Row
                 minVector.push_back(vector<int> {i-1,j-1});
                 minVector.push_back(vector<int> {i-1,j});
@@ -93,16 +81,17 @@ vector<vector<int>> findSurronding(Block currBlock,vector<vector<Block>> grid,in
               }
           }
   }
-  /*
-  for(int p = 0;p<minVector.size();p++){
-    if(.getProp() == 'o')
-      minVector.erase(minVector.begin()+p);
-    //minVector[p].rect.setFillColor(sf::Color::Green);
+  vector<vector<int>> surVector;
+
+  for(int p = 0;p<minVector.size();++p){
+    int a = p;
+    int l = minVector[p][0];
+    int k = minVector[p][1];
+    if(grid[l][k].isBlank()){
+      surVector.push_back(minVector[p]);
+    }
   }
-  */
-  return minVector;
-
-
+  return surVector;
   }
 
 
@@ -110,11 +99,11 @@ int main()
 {
     sf::RenderWindow window(sf::VideoMode(900,700), "A* Visualizer");
     Block src,des;
-    vector<vector<int>> minVector;
+    vector<vector<int>> surVector;
     char mode = 's';
     int rows = 100;
     int columns = 100;
-    auto grid = generateGrid();
+
 
     while (window.isOpen())
     {
@@ -124,8 +113,8 @@ int main()
                 window.close();
             if(event.type == sf::Event::KeyPressed){
               if (event.key.code == sf::Keyboard::Escape){
-                minVector = findSurronding(src,grid,rows,columns);
-                cout << "Min Vectors Obtained" << endl;
+                surVector = findSurronding(src,rows,columns);
+                //cout << "Min Vectors Obtained" << endl;
               }
             }
             if (event.type == sf::Event::MouseButtonPressed)
@@ -150,6 +139,7 @@ int main()
                             else if(mode == 'o'){
                                 grid[i][j].rect.setFillColor(sf::Color::Black);
                                 grid[i][j].setProp('o');
+                                mode = 'c';
                             }
                         }
                 }
@@ -157,8 +147,8 @@ int main()
           }
         }
 
-        /*
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && mode == 'o')
+
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && mode == 'c')
         {
           sf::Vector2i localPosition = sf::Mouse::getPosition(window);
           // std::cout << localPosition.x << "," << localPosition.y << std::endl;
@@ -167,24 +157,28 @@ int main()
                   sf::FloatRect rect = grid[i][j].rect.getGlobalBounds();
                   if(rect.contains(localPosition.x,localPosition.y)){
                           grid[i][j].rect.setFillColor(sf::Color::Black);
+                          grid[i][j].setProp('o');
                   }
               }
           }
         }
-        */
+
+
 
         window.clear();
+        for(int p = 0;p<surVector.size();p++){
+          int l = surVector[p][0];
+          int k = surVector[p][1];
+          grid[l][k].rect.setFillColor(sf::Color::Yellow);
+        }
+
         for(int i=0;i<columns;i++){
             for(int j=0;j<rows;j++){
                 window.draw(grid[i][j].rect);
             }
         }
 
-        for(int p = 0;p<minVector.size();p++){
-          int l = minVector[p][0];
-          int k = minVector[p][1];
-          grid[l][k].rect.setFillColor(sf::Color::Green);
-        }
+
         window.display();
     }
 
