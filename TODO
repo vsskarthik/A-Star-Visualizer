@@ -8,3 +8,15 @@ Create a Block class:
     d -> Destination
     o -> Obstacle
     b -> Blank
+
+  modes:
+    s -> Source
+    d -> Destination
+    o -> Obstacle
+    c -> Continuos
+    b -> Begin
+
+  Keyboard:
+    s -> Start
+    r -> Restart
+    

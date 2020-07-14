@@ -60,7 +60,11 @@ vector<vector<Block>> generateGrid(){
   // End Create Grid
 }
 
-auto grid = generateGrid();
+vector<vector<Block>> grid;
+
+void initGrid(){
+  grid = generateGrid();
+}
 
 vector<vector<int>> findSurronding(Block currBlock,int rows,int columns){
   vector<vector<int>> minVector;
@@ -103,7 +107,7 @@ int main()
     char mode = 's';
     int rows = 100;
     int columns = 100;
-
+    initGrid();
 
     while (window.isOpen())
     {
@@ -112,12 +116,17 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
             if(event.type == sf::Event::KeyPressed){
-              if (event.key.code == sf::Keyboard::Escape){
+              if (event.key.code == sf::Keyboard::S){
                 surVector = findSurronding(src,rows,columns);
-                //cout << "Min Vectors Obtained" << endl;
+                mode = 'b';
               }
+              if (event.key.code == sf::Keyboard::R){
+                window.close();
+                main();
+              }
+
             }
-            if (event.type == sf::Event::MouseButtonPressed)
+            if (event.type == sf::Event::MouseButtonPressed && mode != 'b')
               {
                 sf::Vector2i localPosition = sf::Mouse::getPosition(window);
                 // std::cout << localPosition.x << "," << localPosition.y << std::endl;
