@@ -2,3 +2,9 @@ Create a Block class:
     Has variables: G cost, H cost, F = G+H
     Has Functions: calculateGCost,calculateHCost, calculateFCost
     Has Rect: sfml Rect.
+
+  properties:
+    s -> Source
+    d -> Destination
+    o -> Obstacle
+    b -> Blank
