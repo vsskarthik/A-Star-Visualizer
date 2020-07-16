@@ -188,6 +188,15 @@ int main()
     shorts.setPosition(1000,15);
     }
 
+    sf::Text result;
+    {
+    result.setString("Path Found");
+    result.setFont(font);
+    result.setCharacterSize(20);
+    result.setFillColor(sf::Color::White);
+    result.setPosition(550,15);
+    }
+
 
     g_cost = 0;
     while (window.isOpen())
@@ -216,8 +225,8 @@ int main()
               {
                 sf::Vector2i localPosition = sf::Mouse::getPosition(window);
                 // std::cout << localPosition.x << "," << localPosition.y << std::endl;
-                for(int i=0;i<columns;i++){
-                    for(int j=0;j<rows;j++){
+                for(int i=0;i<rows;i++){
+                    for(int j=0;j<columns;j++){
                         sf::FloatRect rect = grid[i][j].rect.getGlobalBounds();
                         sf::FloatRect panelRect = panel.getGlobalBounds();
                         if(rect.contains(localPosition.x,localPosition.y) && !panelRect.contains(localPosition.x,localPosition.y)){
@@ -250,8 +259,8 @@ int main()
         {
           sf::Vector2i localPosition = sf::Mouse::getPosition(window);
           // std::cout << localPosition.x << "," << localPosition.y << std::endl;
-          for(int i=0;i<columns;i++){
-              for(int j=0;j<rows;j++){
+          for(int i=0;i<rows;i++){
+              for(int j=0;j<columns;j++){
                   sf::FloatRect rect = grid[i][j].rect.getGlobalBounds();
                   if(rect.contains(localPosition.x,localPosition.y)){
                           grid[i][j].rect.setFillColor(sf::Color::Black);
@@ -291,15 +300,23 @@ int main()
         }
 
 
-        for(int i=0;i<columns;i++){
-            for(int j=0;j<rows;j++){
+        for(int i=0;i<rows;i++){
+            for(int j=0;j<columns;j++){
                 window.draw(grid[i][j].rect);
             }
         }
 
+        for(int j=0;j<columns;j++){
+          grid[j][10].rect.setFillColor(sf::Color::Black);
+          grid[j][10].setProp('o');
+          window.draw(grid[j][10].rect);
+        }
         window.draw(panel);
         window.draw(inst);
         window.draw(shorts);
+        if(gameOver == true){
+          window.draw(result);
+        }
 
         window.display();
       }
