@@ -42,7 +42,7 @@ class Block
     Block(){}
 };
 
-
+int g_cost = 0;
 vector<vector<Block>> generateGrid(){
   // Create Grid
   int rows = 100;
@@ -108,14 +108,17 @@ vector<int> findMinimum(vector<vector<int>> surVector,Block destination){
   int goal_x = destination.row;
   int goal_y = destination.col;
   int h_cost;
+
+  int f_cost;
   for(int p = 0;p < surVector.size();p++){
     int curr_x = surVector[p][0];
     int curr_y = surVector[p][1];
-
     h_cost = sqrt(pow(curr_x-goal_x,2) + pow(curr_y-goal_y,2));
-    if(h_cost<f_cost_min){
+    f_cost = h_cost; //+ g_cost;
+    if(f_cost<f_cost_min){
       f_cost_min = h_cost;
       minVector = surVector[p];
+
     }
   }
   return minVector;
@@ -134,7 +137,7 @@ int main()
     int rows = 100;
     int columns = 100;
     initGrid();
-
+    g_cost = 0;
     while (window.isOpen())
     {
         sf::Event event;
@@ -143,10 +146,7 @@ int main()
                 window.close();
             if(event.type == sf::Event::KeyPressed){
               if (event.key.code == sf::Keyboard::S){
-                surVector = findSurronding(curr,rows,columns);
-                minVector = findMinimum(surVector,des);
-                path.push_back(minVector);
-                curr = grid[minVector[0]][minVector[1]];
+
                 //cout << minVector[0] << " " << minVector[1];
                 mode = 'b';
               }
@@ -207,16 +207,27 @@ int main()
 
 
         window.clear();
-        for(int p = 0;p<surVector.size();p++){
-          int l = surVector[p][0];
-          int k = surVector[p][1];
-          grid[l][k].rect.setFillColor(sf::Color::Yellow);
+        // A Star start
+        if(mode == 'b'){
+          surVector = findSurronding(curr,rows,columns);
+          minVector = findMinimum(surVector,des);
+          path.push_back(minVector);
+          curr = grid[minVector[0]][minVector[1]];
 
-        }
-        for(int p = 0;p<path.size();p++){
-          int l = path[p][0];
-          int k = path[p][1];
-          grid[l][k].rect.setFillColor(sf::Color::Green);
+
+          for(int p = 0;p<surVector.size();p++){
+            int l = surVector[p][0];
+            int k = surVector[p][1];
+            grid[l][k].rect.setFillColor(sf::Color::Yellow);
+
+          }
+
+          for(int p = 0;p<path.size();p++){
+            int l = path[p][0];
+            int k = path[p][1];
+            grid[l][k].rect.setFillColor(sf::Color::Green);
+            g_cost+=1;
+          }
         }
 
 
