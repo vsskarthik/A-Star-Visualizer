@@ -71,6 +71,7 @@ void initGrid(){
 }
 
 vector<vector<int>> findSurronding(Block currBlock,int rows,int columns){
+  try{
   vector<vector<int>> minVector;
   for(int i=0;i<rows;i++){
           for(int j=0;j<columns;j++){
@@ -100,6 +101,10 @@ vector<vector<int>> findSurronding(Block currBlock,int rows,int columns){
     }
   }
   return surVector;
+}
+catch(const char* msg){
+  cout << msg;
+}
   }
 
 vector<int> findMinimum(vector<vector<int>> surVector,Block destination){
@@ -110,8 +115,8 @@ vector<int> findMinimum(vector<vector<int>> surVector,Block destination){
   int goal_y = destination.col;
   int h_cost;
   int f_cost;
-  cout << "\n------------------------------------------------" << endl;
-  cout << "Surrounding Blocks";
+  //cout << "\n------------------------------------------------" << endl;
+  //cout << "Surrounding Blocks";
   if(surVector.size() == 0){
     gameOver = true;
   }
@@ -119,7 +124,7 @@ vector<int> findMinimum(vector<vector<int>> surVector,Block destination){
     int curr_x = surVector[p][0];
     int curr_y = surVector[p][1];
     h_cost = sqrt(pow(curr_x-goal_x,2) + pow(curr_y-goal_y,2));
-    cout << "("<< curr_x << "," << curr_y <<") ";
+    //cout << "("<< curr_x << "," << curr_y <<") ";
     f_cost = h_cost + g_cost;
     if(curr_x == destination.row &&curr_y == destination.col){
       gameOver = true;
@@ -130,9 +135,9 @@ vector<int> findMinimum(vector<vector<int>> surVector,Block destination){
       minVector = surVector[p];
     }
   }
-  cout << "\nMin Blocks";
-  cout << "("<< minVector[0] << "," << minVector[1] <<") ";
-  cout << "\n------------------------------------------------" << endl;
+  //cout << "\nMin Blocks";
+  //cout << "("<< minVector[0] << "," << minVector[1] <<") ";
+  //cout << "\n------------------------------------------------" << endl;
   return minVector;
   }
   catch(const char* msg){
@@ -144,7 +149,7 @@ vector<int> findMinimum(vector<vector<int>> surVector,Block destination){
 
 int main()
 {    try{
-    sf::RenderWindow window(sf::VideoMode(900,700), "A* Visualizer");
+    sf::RenderWindow window(sf::VideoMode(1366,720), "A* Visualizer");
     Block src,des;
     Block curr;
     vector<vector<int>> surVector;
@@ -154,6 +159,36 @@ int main()
     int rows = 100;
     int columns = 100;
     initGrid();
+    // Panel
+    sf::Font font;
+    if (!font.loadFromFile("roboto.ttf"))
+    {
+        cout << "Failed to Load Font" << endl;
+    }
+    sf::RectangleShape panel(sf::Vector2f(0, 0));
+    panel.setSize(sf::Vector2f(1366.f, 155.f));
+    panel.setFillColor(sf::Color::Black);
+
+    // Instructions
+
+    sf::Text inst;
+    {
+    inst.setString("Instructions: \n\t1. Select Source Node \n\t2. Select Destination Node \n\t3. Draw out the Boundries \n\t4. Press 'S' to start");
+    inst.setFont(font);
+    inst.setCharacterSize(20);
+    inst.setFillColor(sf::Color::White);
+    inst.setPosition(10,10);
+    }
+    sf::Text shorts;
+    {
+    shorts.setString("Shortcuts: \n\t1. Start -> S \n\t2. Reset -> R \n\t3. Quit -> Q");
+    shorts.setFont(font);
+    shorts.setCharacterSize(20);
+    shorts.setFillColor(sf::Color::White);
+    shorts.setPosition(1000,15);
+    }
+
+
     g_cost = 0;
     while (window.isOpen())
     {
@@ -184,7 +219,8 @@ int main()
                 for(int i=0;i<columns;i++){
                     for(int j=0;j<rows;j++){
                         sf::FloatRect rect = grid[i][j].rect.getGlobalBounds();
-                        if(rect.contains(localPosition.x,localPosition.y)){
+                        sf::FloatRect panelRect = panel.getGlobalBounds();
+                        if(rect.contains(localPosition.x,localPosition.y) && !panelRect.contains(localPosition.x,localPosition.y)){
                             if (mode == 'd'){
                                 grid[i][j].rect.setFillColor(sf::Color::Red);
                                 grid[i][j].setProp('d');
@@ -261,6 +297,9 @@ int main()
             }
         }
 
+        window.draw(panel);
+        window.draw(inst);
+        window.draw(shorts);
 
         window.display();
       }

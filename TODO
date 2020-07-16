@@ -1,7 +1,6 @@
-Create a Block class:
-    Has variables: G cost, H cost, F = G+H
-    Has Functions: calculateGCost,calculateHCost, calculateFCost
-    Has Rect: sfml Rect.
+[FIX]G-cost not properly updated.It is just incearing in every loop by 1.
+[TODO] Add undo feature if possible 
+
 
   properties:
     s -> Source
@@ -19,4 +18,3 @@ Create a Block class:
   Keyboard:
     s -> Start
     r -> Restart
-    
