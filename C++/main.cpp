@@ -65,7 +65,7 @@ vector<vector<Block>> generateGrid(){
 }
 
 vector<vector<Block>> grid;
-
+bool gameOver = false;
 void initGrid(){
   grid = generateGrid();
 }
@@ -95,7 +95,7 @@ vector<vector<int>> findSurronding(Block currBlock,int rows,int columns){
     int a = p;
     int l = minVector[p][0];
     int k = minVector[p][1];
-    if(grid[l][k].isBlank()){
+    if(grid[l][k].isBlank() || grid[l][k].isDestination()){
       surVector.push_back(minVector[p]);
     }
   }
@@ -103,30 +103,47 @@ vector<vector<int>> findSurronding(Block currBlock,int rows,int columns){
   }
 
 vector<int> findMinimum(vector<vector<int>> surVector,Block destination){
+  try{
   int f_cost_min = 100000;
   vector<int> minVector;
   int goal_x = destination.row;
   int goal_y = destination.col;
   int h_cost;
-
   int f_cost;
+  cout << "\n------------------------------------------------" << endl;
+  cout << "Surrounding Blocks";
+  if(surVector.size() == 0){
+    gameOver = true;
+  }
   for(int p = 0;p < surVector.size();p++){
     int curr_x = surVector[p][0];
     int curr_y = surVector[p][1];
     h_cost = sqrt(pow(curr_x-goal_x,2) + pow(curr_y-goal_y,2));
-    f_cost = h_cost; //+ g_cost;
+    cout << "("<< curr_x << "," << curr_y <<") ";
+    f_cost = h_cost + g_cost;
+    if(curr_x == destination.row &&curr_y == destination.col){
+      gameOver = true;
+      return surVector[p];
+    }
     if(f_cost<f_cost_min){
-      f_cost_min = h_cost;
+      f_cost_min = f_cost;
       minVector = surVector[p];
-
     }
   }
+  cout << "\nMin Blocks";
+  cout << "("<< minVector[0] << "," << minVector[1] <<") ";
+  cout << "\n------------------------------------------------" << endl;
   return minVector;
+  }
+  catch(const char* msg){
+
+  }
+
 }
 
 
 int main()
-{
+{    try{
     sf::RenderWindow window(sf::VideoMode(900,700), "A* Visualizer");
     Block src,des;
     Block curr;
@@ -151,8 +168,12 @@ int main()
                 mode = 'b';
               }
               if (event.key.code == sf::Keyboard::R){
+                gameOver = false;
                 window.close();
                 main();
+              }
+              if (event.key.code == sf::Keyboard::Q){
+                window.close();
               }
 
             }
@@ -208,7 +229,7 @@ int main()
 
         window.clear();
         // A Star start
-        if(mode == 'b'){
+        if(mode == 'b' && !gameOver){
           surVector = findSurronding(curr,rows,columns);
           minVector = findMinimum(surVector,des);
           path.push_back(minVector);
@@ -218,14 +239,17 @@ int main()
           for(int p = 0;p<surVector.size();p++){
             int l = surVector[p][0];
             int k = surVector[p][1];
+            if(surVector[p][0] != des.row || surVector[p][1] != des.col){
             grid[l][k].rect.setFillColor(sf::Color::Yellow);
-
+          }
           }
 
           for(int p = 0;p<path.size();p++){
             int l = path[p][0];
             int k = path[p][1];
+            grid[l][k].setProp('o');
             grid[l][k].rect.setFillColor(sf::Color::Green);
+            grid[des.row][des.col].rect.setFillColor(sf::Color::Red);
             g_cost+=1;
           }
         }
@@ -239,7 +263,12 @@ int main()
 
 
         window.display();
-    }
+      }
+      }
+      catch(const char* msg) {
+      }
+      return 0;
 
-    return 0;
+
+
 }
