@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <vector>
 #include<iostream>
 #include <cmath>
@@ -166,7 +167,7 @@ int main()
         cout << "Failed to Load Font" << endl;
     }
     sf::RectangleShape panel(sf::Vector2f(0, 0));
-    panel.setSize(sf::Vector2f(1366.f, 155.f));
+    panel.setSize(sf::Vector2f(1366.f, 130.f));
     panel.setFillColor(sf::Color::Black);
 
     // Instructions
@@ -295,6 +296,7 @@ int main()
             grid[l][k].setProp('o');
             grid[l][k].rect.setFillColor(sf::Color::Green);
             grid[des.row][des.col].rect.setFillColor(sf::Color::Red);
+            grid[des.row][des.col].setProp('d');
             g_cost+=1;
           }
         }
@@ -307,10 +309,25 @@ int main()
         }
 
         for(int j=0;j<columns;j++){
-          grid[j][10].rect.setFillColor(sf::Color::Black);
-          grid[j][10].setProp('o');
-          window.draw(grid[j][10].rect);
+          grid[j][8].rect.setFillColor(sf::Color::Black);
+          grid[j][8].setProp('o');
+          //window.draw(grid[j][8].rect);
+            
+          grid[j][50].rect.setFillColor(sf::Color::Black);
+          grid[j][50].setProp('o');
+          window.draw(grid[j][86].rect);
         }
+
+        for(int j=0;j<rows;j++){
+            grid[0][j].rect.setFillColor(sf::Color::Black);
+            grid[0][j].setProp('o');
+            //window.draw(grid[0][j].rect);
+            
+            grid[86][j].rect.setFillColor(sf::Color::Black);
+            grid[86][j].setProp('o');
+            //window.draw(grid[86][j].rect);
+        }
+
         window.draw(panel);
         window.draw(inst);
         window.draw(shorts);
